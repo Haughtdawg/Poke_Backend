@@ -11,14 +11,14 @@ CREATE TABLE eggs(
     stepsToHatch INT,
     name VARCHAR(80),
     image VARCHAR(255),
-    isHatchable BOOLEAN
+    isHatchable BOOLEAN DEFAULT false
 );
 
 CREATE TABLE tasks(
     id SERIAL PRIMARY KEY,
     pointAmt INT,
     title VARCHAR(255),
-    isCompleted BOOLEAN
+    isCompleted BOOLEAN DEFAULT false
 );
 
 CREATE TABLE users(

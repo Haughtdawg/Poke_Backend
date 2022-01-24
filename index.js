@@ -23,8 +23,16 @@ app.post("/todos", async(req,res)=>{
             "INSERT INTO tasks (title, pointAmt) VALUES($1, $2) RETURNING *",
             [todoData.title, todoData.pointAmt]
         )
-        console.log(newTodo.rows[0]);
         res.send('hello');
+    }catch(err){
+        console.error(err.message);
+    }
+})
+
+app.get("/todos", async(req,res)=>{
+    try{
+        const todos = await pool.query("SELECT * FROM tasks");
+        res.json(todos.rows);
     }catch(err){
         console.error(err.message);
     }
