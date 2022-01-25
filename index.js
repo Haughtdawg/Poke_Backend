@@ -38,6 +38,18 @@ app.get("/todos", async(req,res)=>{
     }
 })
 
+//delete
+app.delete("/todos", async (req, res) => {
+    try {
+        const id = req.params;
+        const toDolete = await pool.query("DELETE FROM tasks WHERE tasks.id = $1", [id]);
+        res.json("byebye Tasks! <3 :p")     
+    } catch (err) {
+        console.log(err.message);
+        
+    }
+})
+
 app.listen(PORT, () => {
     console.log(`Server has started on port ${PORT}`)
 })
