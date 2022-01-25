@@ -39,11 +39,11 @@ app.get("/todos", async(req,res)=>{
 })
 
 //delete
-app.delete("/todos", async (req, res) => {
+app.delete("/todos/:id", async (req, res) => {
     try {
-        const id = req.params;
-        const toDolete = await pool.query("DELETE FROM tasks WHERE tasks.id = $1", [id]);
-        res.json("byebye Tasks! <3 :p")     
+        const {id} = req.params;
+        const toDelete = await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
+        res.json(toDelete.rows);     
     } catch (err) {
         console.log(err.message);
         
