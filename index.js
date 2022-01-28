@@ -91,8 +91,10 @@ app.post('/store', async(req,res) =>{
         /*
             Capture will determine the user's capture value and compare it to a pokemon's capture value, thereby determining what the pokemon in the pokeegg will be.
         */
+        console.log('API call');
         const response = await pool.query("SELECT points FROM users WHERE id = $1", [userID]);
         const jsonPoints = response.rows[0].points;
+        console.log(jsonPoints);
         if(jsonPoints < 1000){
             res.send("Insufficient points");
             return
@@ -122,7 +124,7 @@ app.post('/store', async(req,res) =>{
 
         // Create a new Egg row 
         const newEgg = await pool.query("INSERT INTO eggs (stepsToHatch, name, image) VALUES ($1, $2, $3) RETURNING *", [ptsRemaining, pokeName, pokemonImage]);
-        res.send(newEgg.rows);
+        res.json(newEgg.rows);
     } catch (error) {
         console.error(error.message);
     }
