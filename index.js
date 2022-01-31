@@ -18,7 +18,41 @@ if(process.env.NODE_ENV == 'production'){
 
 //ROUTES
 
-// Todos
+
+
+app.get("/todos", async(req,res)=>{
+    try{
+        const todos = await pool.query("SELECT * FROM tasks");
+        res.json(todos.rows);
+    }catch(err){
+        console.error(err.message);
+    }
+})
+
+
+app.get('/eggs', async(req,res) =>{
+    try {
+        const eggs = await pool.query("SELECT * FROM eggs");
+        res.json(eggs.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+});
+
+//GET points
+app.get('/store', async(req, res) =>{
+    try {
+        const userPoints = await pool.query("SELECT points FROM users WHERE id = $1", [userID]);
+        const actualUserPoints = userPoints.rows[0].points;
+        res.json(userPoints.points)
+    } catch (error) {
+        console.error(error.message);
+    }
+});
+
+//GET pokemon
+
+
 app.post("/todos", async(req,res)=>{
     try{
         const todoData = req.body;
@@ -33,36 +67,7 @@ app.post("/todos", async(req,res)=>{
     }
 })
 
-app.get("/todos", async(req,res)=>{
-    try{
-        const todos = await pool.query("SELECT * FROM tasks");
-        res.json(todos.rows);
-    }catch(err){
-        console.error(err.message);
-    }
-})
-
-app.delete("/todos/:id", async (req, res) => {
-    try {
-        const {id} = req.params;
-        const toDelete = await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
-        res.json(toDelete.rows);     
-    } catch (err) {
-        console.log(err.message);
-        
-    }
-})
-
-// Eggs
-
-app.get('/eggs', async(req,res) =>{
-    try {
-        const eggs = await pool.query("SELECT * FROM eggs");
-        res.json(eggs.rows);
-    } catch (error) {
-        console.error(error.message);
-    }
-});
+//POST tasks
 
 app.post('/hatch', async(req,res) =>{
     try {
@@ -94,7 +99,6 @@ app.post('/store', async(req,res) =>{
         console.log('API call');
         const response = await pool.query("SELECT points FROM users WHERE id = $1", [userID]);
         const jsonPoints = response.rows[0].points;
-        console.log(jsonPoints);
         if(jsonPoints < 1000){
             res.send("Insufficient points");
             return
@@ -127,6 +131,17 @@ app.post('/store', async(req,res) =>{
         res.json(newEgg.rows);
     } catch (error) {
         console.error(error.message);
+    }
+})
+
+app.delete("/todos/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const toDelete = await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
+        res.json(toDelete.rows);     
+    } catch (err) {
+        console.log(err.message);
+        
     }
 })
 
