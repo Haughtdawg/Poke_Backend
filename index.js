@@ -44,7 +44,7 @@ app.get('/store', async(req, res) =>{
     try {
         const userPoints = await pool.query("SELECT points FROM users WHERE id = $1", [userID]);
         const actualUserPoints = userPoints.rows[0].points;
-        res.json(userPoints.points)
+        res.json(actualUserPoints);
     } catch (error) {
         console.error(error.message);
     }
@@ -131,6 +131,28 @@ app.post('/store', async(req,res) =>{
         res.json(newEgg.rows);
     } catch (error) {
         console.error(error.message);
+    }
+})
+
+app.post('/submit', async(req, res) =>{
+    //get tasks given the IDs of those tasks
+    //delete tasks 
+    //add points to the user
+    try {
+        const checkedIDsArray = req.body;
+        console.log(checkedIDsArray);
+        const queryCall = 'SELECT pointAmt FROM tasks WHERE id = ANY($1::int[])'; 
+        const IDsarray = checkedIDsArray.id;
+        const response = await pool.query(queryCall, [IDsarray])
+        const fullPointAmount = response.rows;
+        const addedValue = fullPointAmount.reduce((prev, current) => prev + current.pointamt, 0);  
+        
+        const deleteQuery = await pool.query(`DELETE FROM tasks WHERE id = ANY($1::int[])`, [IDsarray]);
+       
+        const addpointsQuery = await pool.query(`UPDATE users SET points = points + $1 WHERE id = $2`, [addedValue, userID]);
+        res.send("added points to user")
+    } catch (error) {
+        console.error(error.message);      
     }
 })
 
