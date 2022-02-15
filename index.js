@@ -138,6 +138,8 @@ app.post('/submit', async(req, res) =>{
     //get tasks given the IDs of those tasks
     //delete tasks 
     //add points to the user
+
+    //update steps to hatch for eggs!
     try {
         const checkedIDsArray = req.body;
         console.log(checkedIDsArray);
@@ -150,7 +152,13 @@ app.post('/submit', async(req, res) =>{
         const deleteQuery = await pool.query(`DELETE FROM tasks WHERE id = ANY($1::int[])`, [IDsarray]);
        
         const addpointsQuery = await pool.query(`UPDATE users SET points = points + $1 WHERE id = $2`, [addedValue, userID]);
-        res.send("added points to user")
+        
+        const updateEggsQuery = await pool.query(`UPDATE stepsToHatch FROM eggs SET stepstohatch = stepstohatch - $1`, [addedValue]);
+        
+        const waaario = async () => {
+            const toggleHatchableEggs = await pool.query(`UPDATE FROM eggs SET ishatchable = $1 CONSTRAINT nonPositiveisHatchable CHECK(stepstohatch <= 0)`, [TRUE])
+        }
+        const triggerCheck = await pool.query(`CREATE TRIGGER hatchable_Bool AFTER UPDATE points FROM eggs FOR EACH ROW EXECUTE PROCEDURE waaario()`)
     } catch (error) {
         console.error(error.message);      
     }
